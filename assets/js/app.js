@@ -136,24 +136,34 @@ const forms = document.querySelector("#form");
 const noteList = document.querySelector("#note-list");
 // console.log(noteList);
 
+
+
 //eventlisteners
 eventlisteners();
+// call eventlisteners
 function eventlisteners() {
   forms.addEventListener("submit", newnote);
+//   show form and use submit to get note
   noteList.addEventListener("click" ,removenote)
+//   use remove btn for remove note li
+
+document.addEventListener("DOMContentLoaded",localStorageOnload)
+//use DOM
 }
 
 // function
 
 function newnote(e) {
   e.preventDefault();
+//   default submit 
   // console.log(document.querySelector("#note").value);
  
   const note = document.querySelector("#note").value;
- 
+//  get value on id note left list
 
 if (note==="") {
-} else {
+} //dont show if note===" "
+else {
     const li = document.createElement("li");
     const btnremove=document.createElement("a")
     btnremove.textContent="X"
@@ -161,8 +171,13 @@ if (note==="") {
     li.appendChild(btnremove)
     li.appendChild(document.createTextNode(note))
     noteList.appendChild(li) 
+
 }
-  console.log(btnremove)
+// show note
+this.reset()
+// reset text area after submit
+ addNoteToLocalStorage(note)
+//add note to LS
 }
 
 function removenote(e){
@@ -171,5 +186,66 @@ function removenote(e){
     if (e.target.classList.contains('remove-note')) {
        const removeli= e.target.parentElement
        removeli.remove()
+       
     }
+    removeNoteLocalStorage(e.target.parentElement.textContent)
+    // console.log(e.target.parentElement.textContent);
 }
+function localStorageOnload(){
+    const notes =getNotesFromLocalStorage()
+    notes.forEach(note => {
+      const li = document.createElement("li");
+      const btnremove=document.createElement("a")
+      btnremove.textContent="X"
+      btnremove.classList="remove-note"
+      li.appendChild(btnremove)
+      li.appendChild(document.createTextNode(note))
+      noteList.appendChild(li) 
+    });
+    
+}
+function addNoteToLocalStorage(note){
+  const notes=getNotesFromLocalStorage()
+  notes.push(note)
+  localStorage.setItem('notes', JSON.stringify(notes))
+}
+function getNotesFromLocalStorage(){
+    let notes;
+    let getFromLS = localStorage.getItem('notes');
+if (getFromLS===null) {
+    notes=[]
+} else {
+    notes=JSON.parse(getFromLS)
+}
+return notes;
+}
+function removeNoteLocalStorage(noteContent){
+
+const noteDelete = noteContent.substring(0, noteContent.length - 1)
+const notesFromLS = getNotesFromLocalStorage()
+notesFromLS.forEach(function(note, index) {
+            if (note === noteDelete) {
+                notesFromLS.splice(index, 1)
+            }
+        });
+    
+        // set new array of notes to the local storage
+        localStorage.setItem('notes', JSON.stringify(notesFromLS))
+}
+// function removeNoteLocalStorage(noteContent) {
+//       // delete X from the contetn
+//       const noteDelete = noteContent.substring(0, noteContent.length - 1)
+  
+//       // get notes from localstorage
+//       const notesFromLS = getNotesFromLocalStorage()
+  
+//       notesFromLS.forEach(function(note, index) {
+//           if (note === noteDelete) {
+//               notesFromLS.splice(index, 1)
+//           }
+//       });
+  
+//       // set new array of notes to the local storage
+//       localStorage.setItem('notes', JSON.stringify(notesFromLS))
+  
+//     }
